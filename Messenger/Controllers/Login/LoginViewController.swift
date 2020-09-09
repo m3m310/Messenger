@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class LoginViewController: UIViewController {
     
@@ -99,6 +100,17 @@ class LoginViewController: UIViewController {
             return
         }
         //firebase login
+        //weak self to dont cause a retintion cycle
+        FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password, completion:  {[weak self] (authResult, error) in
+            guard let strongSelf = self else{return}
+            guard let result = authResult, error == nil else {
+                print("Failed to log in user with email: \(email)")
+                return
+            }
+            let user = result.user
+            print("Logged in user: \(user)")
+            strongSelf.navigationController?.dismiss(animated: true, completion: nil)
+        })
     }
     func alertUserLoginError(){
         let alert = UIAlertController(title: "Woops", message: "Please enter all information to log in.", preferredStyle: .alert)
